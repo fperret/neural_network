@@ -1,12 +1,16 @@
 #pragma once
+
+typedef std::vector<std::deque<float> > t_matrix;
+
 class Data
 {
+	// Need better encapsulation
 	private:
 
 	public:
 		int									m;
 		int									nb_parameters;
-		std::vector<std::vector<float> >	x;
+		t_matrix							x;
 		std::vector<int>					y;
 
 		Data();

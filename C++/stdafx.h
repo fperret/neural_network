@@ -11,10 +11,13 @@
 #include <tchar.h>
 
 #include <vector>
+#include <deque>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
-
+#include <math.h>
 
 // TODO: reference additional headers your program requires here
+
+#include "Data.h"
