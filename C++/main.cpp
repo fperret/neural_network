@@ -86,7 +86,7 @@ void	forward_propagation(Data data, t_matrix &theta_1, t_matrix &theta_2)
 
 int main()
 {
-	Data	data = read_data("data.csv");
+/*	Data	data = read_data("data.csv");
 	t_matrix	theta_1;
 	t_matrix	theta_2;
 	std::cout << "X : " << data.m << " * " << data.nb_parameters << "|| y : " << data.nb_parameters << " * " << "1" << std::endl;
@@ -95,7 +95,8 @@ int main()
 	load_thetas(theta_2, "weights2.csv");
 	std::cout << "theta 1 : " << theta_1.size() << " * " << theta_1[0].size() << std::endl;
 	std::cout << "theta 2 : " << theta_2.size() << " * " << theta_2[0].size() << std::endl;
-	forward_propagation(data, theta_1, theta_2);
-    return 0;
+	forward_propagation(data, theta_1, theta_2);*/
+
+    return (0);
 }
 
