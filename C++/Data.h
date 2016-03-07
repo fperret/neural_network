@@ -1,6 +1,6 @@
 #pragma once
 
-typedef std::vector<std::deque<float> > t_matrix;
+typedef std::deque<std::deque<float> > t_matrix;
 
 class Data
 {

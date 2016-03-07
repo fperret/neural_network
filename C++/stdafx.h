@@ -17,7 +17,9 @@
 #include <sstream>
 #include <string>
 #include <math.h>
-
+#include <algorithm>
+#include <ctime>
+#include <random>
 // TODO: reference additional headers your program requires here
 
 #include "Data.h"
