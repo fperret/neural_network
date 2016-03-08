@@ -30,24 +30,26 @@ void	load_thetas(t_matrix &theta, std::string filename)
 	}
 }
 
-t_matrix	forward_propagation(Data data, t_matrix &theta_1, t_matrix &theta_2)
+t_matrix	forward_propagation(t_matrix &x, t_matrix &theta_1, t_matrix &theta_2)
 {
 	std::cout << "forward_propagation() call" << std::endl;
-	add_column(data.x, 1);
-	t_matrix	a_2 = mult_mat_sigmoid(theta_1, get_transpose(data.x));
+	add_column(x, 1);
+	t_matrix	z_2 = mult_mat(theta_1, transpose(x));
+	t_matrix	a_2 = apply_sigmoid_new(z_2);
 	a_2.push_front(std::deque<float>(a_2[0].size(), 1));
 
 	t_matrix	a_3 = mult_mat_sigmoid(theta_2, a_2);
-	a_3 = get_transpose(a_3);
-	delete_first_column(data.x);
+	delete_first_column(x);
 	return (a_3);
 }
 
-void	predict(Data data, t_matrix &theta_1, t_matrix &theta_2)
+void	predict(t_matrix &x, std::vector<float> &y, t_matrix &theta_1, t_matrix &theta_2)
 {
-	t_matrix	hypothesis = forward_propagation(data, theta_1, theta_2);
-	std::vector<int>	prediction(data.m);
-	for (int i = 0; i < data.m; ++i)
+	t_matrix	hypothesis = transpose(forward_propagation(x, theta_1, theta_2));
+	int	m = x.size();
+	std::vector<int>	prediction(m);
+
+	for (int i = 0; i < m; ++i)
 	{
 		int	index_max = 0;
 		float	value_max = 0;
@@ -61,12 +63,10 @@ void	predict(Data data, t_matrix &theta_1, t_matrix &theta_2)
 		}
 		prediction[i] = index_max + 1;
 	}
-	std::cout << "count correct" << std::endl;
-
 	int	correct = 0;
 	for (size_t i = 0; i < prediction.size(); ++i)
 	{
-		if (prediction[i] == data.y[i])
+		if (prediction[i] == y[i])
 			correct++;
 	}
 	std::cout << correct << std::endl;
@@ -76,7 +76,15 @@ void	predict(Data data, t_matrix &theta_1, t_matrix &theta_2)
 int main()
 {
 //	check_nn_gradients();
-	Data	data = read_data("data.csv");
+//	Data	data = read_data("data.csv", 400);
+//	write_input_read_to_file(data);
+
+	int		nb_example = 5000;
+	int		nb_feature = 400;
+	t_matrix	x(nb_example, std::deque<float>(nb_feature));
+	std::vector<float>	y(nb_example, 0);
+	testread_data("data.csv", x, y);
+
 	t_matrix	theta_1;
 	t_matrix	theta_2;
 	int		input_layer_size = 400;
@@ -84,17 +92,28 @@ int main()
 	int		output_layer_size = 10;
 	float		lambda = 1;
 	
-	srand(time(NULL));
-	std::cout << "X : " << data.m << " * " << data.nb_parameters << "|| y : " << data.m << " * " << "1" << std::endl;
+	std::cout << "X : " << nb_example << " * " << nb_feature << "|| y : " << nb_example << " * " << "1" << std::endl;
 
-	load_thetas(theta_1, "weights1.csv");
-	load_thetas(theta_2, "weights2.csv");
-//	std::cout << "theta 1 : " << theta_1.size() << " * " << theta_1[0].size() << std::endl;
-//	std::cout << "theta 2 : " << theta_2.size() << " * " << theta_2[0].size() << std::endl;
-	//predict(data, theta_1, theta_2);
-//	theta_1 = random_initialize_weights(input_layer_size, hidden_layer_size);
-	//theta_2 = random_initialize_weights(hidden_layer_size, output_layer_size);
-	printf("cost : %f\n", cost_function(data, theta_1, theta_2, lambda, output_layer_size));
+//	load_thetas(theta_1, "weights1.csv");
+//	load_thetas(theta_2, "weights2.csv");
+	theta_1 = random_initialize_weights(input_layer_size, hidden_layer_size);
+	theta_2 = random_initialize_weights(hidden_layer_size, output_layer_size);
+	float	learning_rate = 1.1f;
+	int		nb_iter = 10;
+	for (int i = 0; i < nb_iter; ++i)
+	{
+		clock_t	t = clock();
+		printf("cost : %f\n", cost_function(x, y, theta_1, theta_2, lambda, output_layer_size, learning_rate));
+		t = clock() - t;
+		std::cout << ((float)t) / CLOCKS_PER_SEC << " seconds" << std::endl;
+	}
+	int final_m = 5000;
+	t_matrix	final_x(final_m, std::deque<float>(nb_feature));
+	std::vector<float>	final_y(final_m);
+	testread_data("data.csv", final_x, final_y);
+	predict(final_x, final_y, theta_1, theta_2);
+	write_matrix_to_file(theta_1, "theta1.txt");
+	write_matrix_to_file(theta_2, "theta2.txt");
     return (0);
 }
 

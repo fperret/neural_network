@@ -2,7 +2,7 @@
 #include "neural_network.h"
 
 // Something doesn't work, maybe in the way the matrices are unrolled
-
+/*
 t_matrix	debug_init_weights(int fan_out, int fan_in)
 {
 	t_matrix	ret(fan_out, std::deque<float>(fan_in + 1));
@@ -13,7 +13,7 @@ t_matrix	debug_init_weights(int fan_out, int fan_in)
 		for (int i = 0; i < ret.size(); ++i)
 		{
 			count++;
-			ret[i][j] = sin(count) / 10;
+			ret[i][j] = float(sin(count) / float(10));
 		}
 	}
 	return (ret);
@@ -51,7 +51,7 @@ t_matrix	compute_numerical_grad(Data data, t_matrix &theta_1, t_matrix &theta_2,
 {
 	t_matrix	numgrad1(theta_1.size(), std::deque<float>(theta_1[0].size(), 0));
 	t_matrix	perturb1(theta_1.size(), std::deque<float>(theta_1[0].size(), 0));
-	float epsilon = 0.0001;
+	float epsilon = 0.0001f;
 
 	std::cout << theta_1.size() * theta_1[0].size() << std::endl;
 
@@ -66,7 +66,7 @@ t_matrix	compute_numerical_grad(Data data, t_matrix &theta_1, t_matrix &theta_2,
 			float	loss2 = cost_function(data,
 				apply_add_mat_new(theta_1, perturb1),
 				theta_2, 0, num_labels);
-			numgrad1[i][j] = (loss2 - loss1) / (2 * epsilon);
+			numgrad1[i][j] = (loss2 - loss1) / float(2 * epsilon);
 			perturb1[i][j] = 0;
 		}
 	}
@@ -85,7 +85,7 @@ t_matrix	compute_numerical_grad(Data data, t_matrix &theta_1, t_matrix &theta_2,
 			float	loss2 = cost_function(data,
 				theta_1,
 				apply_add_mat_new(theta_2, perturb2), 0, num_labels);
-			numgrad2[i][j] = (loss2 - loss1) / (2 * epsilon);
+			numgrad2[i][j] = (loss2 - loss1) / float(2 * epsilon);
 			perturb2[i][j] = 0;
 		}
 	}
@@ -118,4 +118,4 @@ void	check_nn_gradients()
 	}
 	data.y = y;
 	compute_numerical_grad(data, theta_1, theta_2, num_labels);
-}
+}*/

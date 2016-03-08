@@ -23,7 +23,7 @@ t_matrix	random_initialize_weights(int &l_in, int &l_out)
 	return (ret);
 }
 
-t_matrix	create_y_label(std::vector<int> &y, int m, int k)
+t_matrix	create_y_label(std::vector<float> &y, int m, int k)
 {
 	t_matrix	ret(m, std::deque<float>(k, 0));
 
@@ -38,17 +38,29 @@ t_matrix	create_y_label(std::vector<int> &y, int m, int k)
 	return (ret);
 }
 
-float	cost_function(Data data, t_matrix &theta_1, t_matrix &theta_2, float lambda, int n)
+void	update_theta(t_matrix &theta, t_matrix &grad, float &learning_rate)
 {
-	// a_3 -> (5000 * 10)
-	add_column(data.x, 1);
-	t_matrix	z_2 = mult_mat(theta_1, get_transpose(data.x));
+	for (size_t i = 0; i < theta.size(); ++i)
+	{
+		for (size_t j = 0; j < theta[i].size(); ++j)
+		{
+			theta[i][j] -= learning_rate * grad[i][j];
+		}
+	}
+}
+
+float	cost_function(t_matrix &x, std::vector<float> &y, t_matrix &theta_1, t_matrix &theta_2, float lambda, int n, float &learning_rate)
+{
+	int	m = x.size();
+
+	add_column(x, 1);
+	t_matrix	z_2 = mult_mat(theta_1, transpose(x));
 	t_matrix	a_2 = apply_sigmoid_new(z_2);
 	a_2.push_front(std::deque<float>(a_2[0].size(), 1));
 
 	t_matrix	a_3 = mult_mat_sigmoid(theta_2, a_2);
 
-	t_matrix y_label = get_transpose(create_y_label(data.y, data.m, theta_2.size()));
+	t_matrix y_label = transpose(create_y_label(y, m, theta_2.size()));
 	float cost = 0;
 	for (size_t i = 0; i < y_label.size(); ++i)
 	{
@@ -59,8 +71,9 @@ float	cost_function(Data data, t_matrix &theta_1, t_matrix &theta_2, float lambd
 			cost += (left_member - right_member);
 		}
 	}
-	cost *= (1 / float(data.m));
-	cost += (lambda / float((2 * data.m))) * (squared_sum_mat(theta_1) + squared_sum_mat(theta_2));
+	cost *= (1 / float(m));
+	cost += (lambda / float((2 * m))) * (squared_sum_mat(theta_1) + squared_sum_mat(theta_2));
+	printf("cost %f\n", cost);
 
 	t_matrix	error_l3(a_3.size(), std::deque<float>(a_3[0].size()));
 	for (size_t i = 0; i < error_l3.size(); ++i)
@@ -73,30 +86,36 @@ float	cost_function(Data data, t_matrix &theta_1, t_matrix &theta_2, float lambd
 	// Remove bias
 	t_matrix	theta2_cpy = theta_2;
 	delete_first_column(theta2_cpy);
-	t_matrix	error_l2(theta_2[0].size(), std::deque<float>(data.m));
-	t_matrix	transpose_theta_2 = get_transpose(theta_2);
-	error_l2 = mult_mat(get_transpose(theta2_cpy), error_l3);
+	t_matrix	error_l2(theta_2[0].size(), std::deque<float>(m));
+	t_matrix	transpose_theta_2 = transpose(theta_2);
+	error_l2 = mult_mat(transpose(theta2_cpy), error_l3);
 
 	apply_sigmoid_gradient_on(error_l2, z_2);
 
-	t_matrix	delta_1 = mult_mat(error_l2, data.x);
-	t_matrix	delta_2 = mult_mat(error_l3, get_transpose(a_2));
-	t_matrix	theta1_grad = apply_factor_new(delta_1, (1.0f / float(data.m)));
-	t_matrix	theta2_grad = apply_factor_new(delta_2, (1.0f / float(data.m)));
+	t_matrix	delta_1 = mult_mat(error_l2, x);
+	t_matrix	delta_2 = mult_mat(error_l3, transpose(a_2));
+	t_matrix	theta1_grad = apply_factor_new(delta_1, (1.0f / float(m)));
+	t_matrix	theta2_grad = apply_factor_new(delta_2, (1.0f / float(m)));
 
-	std::cout << "theta1_grad : " << theta1_grad.size() << " " << theta1_grad[0].size() << std::endl;
-
-	std::cout << "theta2_grad : " << theta2_grad.size() << " " << theta2_grad[0].size() << std::endl;
-
-/*	for (size_t i = 0; i < theta2_grad.size() / 2; ++i)
+	for (size_t i = 0; i < theta1_grad.size(); ++i)
 	{
-		for (size_t j = 0; j < theta2_grad[0].size() / 2; ++j)
+		for (size_t j = 1; j < theta1_grad[i].size(); ++j)
 		{
-			printf("%f ", theta2_grad[i][j]);
+			theta1_grad[i][j] += float((lambda / float(m))) * theta_1[i][j];
 		}
-		std::cout << std::endl;
-	}*/
+	}
 
-	delete_first_column(data.x);
+	for (size_t i = 0; i < theta2_grad.size(); ++i)
+	{
+		for (size_t j = 1; j < theta2_grad[i].size(); ++j)
+		{
+			theta2_grad[i][j] += float((lambda / float(m))) * theta_2[i][j];
+		}
+	}
+
+	update_theta(theta_1, theta1_grad, learning_rate);
+	update_theta(theta_2, theta2_grad, learning_rate);
+
+	delete_first_column(x);
 	return (cost);
 }
