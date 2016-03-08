@@ -17,7 +17,7 @@ void	apply_sigmoid_gradient_on(t_matrix &a, t_matrix &b)
 	{
 		for (int j = 0; j < a[i].size(); ++j)
 		{
-			a[i][j] = sigmoid_gradient(b[i][j]);
+			a[i][j] *= sigmoid_gradient(b[i][j]);
 		}
 	}
 }

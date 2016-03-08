@@ -89,44 +89,44 @@ t_matrix		apply_factor_new(t_matrix &m, float factor)
 
 t_matrix	mult_mat_sigmoid(t_matrix &a, t_matrix &b)
 {
-	t_matrix			ret(a.size(), std::deque<float>(b.size(), 0));
+	int	m = a.size();
+	int	n = a[0].size();
+	int	o = b[0].size();
+	t_matrix	ret(m, std::deque<float>(o));
 
-	for (int i = 0, i_end = ret.size(); i < i_end; ++i)
+	for (int i = 0; i < m; ++i)
 	{
-		for (int j = 0, j_end = ret[i].size(); j < j_end; ++j)
+		for (int j = 0; j < o; ++j)
 		{
-			for (int k = 0, k_end = a[i].size(); k < k_end; ++k)
+			float	sum = 0;
+			for (int k = 0; k < n; ++k)
 			{
-				ret[i][j] += a[i][k] * b[j][k];
+				sum += a[i][k] * b[k][j];
 			}
-			ret[i][j] = sigmoid(ret[i][j]);
+			ret[i][j] = sigmoid(sum);
 		}
 	}
-
 	return (ret);
 }
 
 t_matrix	mult_mat(t_matrix &a, t_matrix &b)
 {
-	/*	 Naive implementation of matrices product
-	 /!\ Operands size differ from normal matrices product /!\
-			here :(m * n) x (o * n) -> (m * o)
-			mult_mat(a, b) == a * b'
-	*/
-	// Need improvement with iterator ?
+	int	m = a.size();
+	int	n = a[0].size();
+	int	o = b[0].size();
+	t_matrix	ret(m, std::deque<float>(o));
 
-	t_matrix			ret(a.size(), std::deque<float>(b.size(), 0));
-
-	for (int i = 0, i_end = ret.size(); i < i_end; ++i)
+	for (int i = 0; i < m; ++i)
 	{
-		for (int j = 0, j_end = ret[i].size(); j < j_end; ++j)
+		for (int j = 0; j < o; ++j)
 		{
-			for (int k = 0, k_end = a[i].size(); k < k_end; ++k)
+			float	sum = 0;
+			for (int k = 0; k < n; ++k)
 			{
-				ret[i][j] += a[i][k] * b[j][k];
+				sum += a[i][k] * b[k][j];
 			}
+			ret[i][j] = sum;
 		}
 	}
-
 	return (ret);
 }

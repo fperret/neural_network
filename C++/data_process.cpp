@@ -31,8 +31,8 @@ Data	read_data(std::string filename)
 			exit(-1);
 		}
 		data.m++;
-		//if (data.m == 100)
-		//	break;
+		if (data.m == 50)
+			break;
 	}
 	data.nb_parameters--;
 	if (data.m == 0 || data.nb_parameters <= 0)
@@ -60,8 +60,8 @@ Data	read_data(std::string filename)
 			j++;
 		}
 		i++;
-		//if (i == 100)
-		//	break;
+		if (i == 50)
+			break;
 	}
 	return (data);
 }

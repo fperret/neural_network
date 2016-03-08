@@ -16,6 +16,10 @@ void		print_mat(t_matrix &a);
 t_matrix	apply_sigmoid_new(t_matrix &m);
 t_matrix	apply_factor_new(t_matrix &m, float factor);
 float		squared_sum_mat(t_matrix &m);
+
+t_matrix	mult_mat(t_matrix &a, t_matrix &b);
+t_matrix	mult_mat_sigmoid(t_matrix &a, t_matrix &b);
+
 t_matrix	mult_mat(t_matrix &a, t_matrix &b);
 t_matrix	mult_mat_sigmoid(t_matrix &a, t_matrix &b);
 t_matrix	get_transpose(t_matrix &m);
